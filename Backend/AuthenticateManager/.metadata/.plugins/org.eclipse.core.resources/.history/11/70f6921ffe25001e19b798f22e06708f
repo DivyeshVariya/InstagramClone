@@ -1,0 +1,35 @@
+package com.authenticate.serviceImpl;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
+import com.authenticate.dto.UserResponse;
+import com.authenticate.model.PendingRequest;
+import com.authenticate.repository.HandleRequestRepository;
+import com.authenticate.repository.PendingRequestRepository;
+import com.authenticate.service.RequestHandlingService;
+
+@Service
+public class RequestHandlingServiceImpl implements RequestHandlingService{
+
+	@Autowired
+	PendingRequestRepository pendingRequestRepository;
+	
+	@Autowired
+	HandleRequestRepository handleRequestRepository;
+	
+	@Override
+	public UserResponse sendRequest(PendingRequest pendingRequest) {
+		// TODO Auto-generated method stub
+		PendingRequest pr=pendingRequestRepository.save(pendingRequest);
+		if(pr.equals(null))
+		{
+			UserResponse response=new UserResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),"Failed to send reuqest...");
+			return response;
+		}
+		UserResponse response=new UserResponse(HttpStatus.OK.value(),"Request sent successfully...");
+		return response;
+	}
+	
+}

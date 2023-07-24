@@ -1,0 +1,160 @@
+package com.authenticate.serviceImpl;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
+import com.authenticate.dto.PendingReqResponse;
+import com.authenticate.dto.UserDetailsResponse;
+import com.authenticate.dto.UserResponse;
+import com.authenticate.model.HandleRequest;
+import com.authenticate.model.PendingRequest;
+import com.authenticate.repository.HandleRequestRepository;
+import com.authenticate.repository.PendingRequestRepository;
+import com.authenticate.service.RequestHandlingService;
+
+@Service
+public class RequestHandlingServiceImpl implements RequestHandlingService{
+
+	@Autowired
+	PendingRequestRepository pendingRequestRepository;
+	
+	@Autowired
+	HandleRequestRepository handleRequestRepository;
+	
+	@Override
+	public UserResponse sendRequest(PendingRequest pendingRequest) {
+		// TODO Auto-generated method stub
+		PendingRequest pr=pendingRequestRepository.save(pendingRequest);
+		if(pr.equals(null))
+		{
+			UserResponse response=new UserResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),"Failed to add pending request data...");
+			return response;
+		}
+		Optional<HandleRequest> hr1=handleRequestRepository.findById(pendingRequest.getLoggedUserName());
+		Optional<HandleRequest> hr2=handleRequestRepository.findById(pendingRequest.getRequestedUserName());
+		if(hr1.equals(null)||hr2.equals(null))
+		{
+			UserResponse response=new UserResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),"Failed to add in handle request data...");
+			return response;
+		}
+		hr1.get().getRequested().add(pendingRequest);
+		hr1.get().setRequested(hr1.get().getRequested());
+		handleRequestRepository.save(hr1.get());
+		pendingRequest.setStatus("pending");
+		hr2.get().getPending().add(pendingRequest);
+		hr2.get().setPending(hr2.get().getPending());
+		handleRequestRepository.save(hr2.get());
+		UserResponse response=new UserResponse(HttpStatus.OK.value(),"Request sent successfully...");
+		return response;
+	}
+
+	@Override
+	public PendingReqResponse getPendingRequests(String loggedInUserName, String requestedUserName) {
+		// TODO Auto-generated method stub
+		Optional<PendingRequest> req =pendingRequestRepository.findByLoggedUserNameAndRequestedUserName(loggedInUserName,requestedUserName);
+		if(req.isEmpty())
+		{
+			PendingReqResponse response=new PendingReqResponse(HttpStatus.OK.value(),"No pending requests there...",null);
+			return response;
+		}
+		PendingReqResponse response=new PendingReqResponse(HttpStatus.OK.value(),"Pending requests find successfully...",req.get());
+		return response;
+	}
+
+	@Override
+	public UserDetailsResponse getRequestDetails(String loggedInUserName) {
+		// TODO Auto-generated method stub
+		Optional<HandleRequest> request =handleRequestRepository.findById(loggedInUserName);
+		if(request.isEmpty())
+		{
+			UserDetailsResponse response=new UserDetailsResponse(HttpStatus.NOT_FOUND.value(),"User Details not found...",null);
+			return response;
+		}
+		UserDetailsResponse response=new UserDetailsResponse(HttpStatus.OK.value(),"User Details found successfully...",request.get());
+		return response;
+	}
+
+	@Override
+	public UserResponse add(HandleRequest request) {
+		// TODO Auto-generated method stub
+		handleRequestRepository.save(request);
+		return null;
+	}
+
+	@Override
+	public UserResponse confirmRequest(PendingRequest pendingRequest) {
+		// TODO Auto-generated method stub
+		System.out.println(pendingRequest);
+		Optional<PendingRequest> req =pendingRequestRepository.findByLoggedUserNameAndRequestedUserName(pendingRequest.getLoggedUserName(),pendingRequest.getRequestedUserName());
+		if(req.isEmpty())
+		{
+			UserResponse response=new UserResponse(HttpStatus.OK.value(),"Failed to fetch this pending request......");
+			return response;
+		}
+		pendingRequestRepository.deleteById(req.get().getId());
+		req.get().setStatus("accepted");
+		System.out.println(req.get().hashCode());
+		pendingRequestRepository.save(req.get());
+		Optional<HandleRequest> h_request_1 =handleRequestRepository.findById(pendingRequest.getLoggedUserName());
+		Optional<HandleRequest> h_request_2 =handleRequestRepository.findById(pendingRequest.getRequestedUserName());
+		if(h_request_1.equals(null)||h_request_2.equals(null))
+		{
+			UserResponse response=new UserResponse(HttpStatus.OK.value(),"Failed to fetch handle request data...");
+			return response;
+		}
+		PendingRequest temp_req_1=new PendingRequest(),temp_req_2=new PendingRequest();
+		for (PendingRequest req2 : h_request_2.get().getPending()) {
+	         if(req2.equals(pendingRequest)) {
+	        	 	temp_req_2.setId(req2.getId());
+		            temp_req_2.setLoggedUserName(pendingRequest.getLoggedUserName());
+		            temp_req_2.setRequestedUserName(pendingRequest.getRequestedUserName());
+		            temp_req_2.setStatus(pendingRequest.getStatus());
+	         }
+	      }
+		pendingRequest.setStatus("requested");
+		for (PendingRequest req1 : h_request_1.get().getRequested()) {
+			if(req1.equals(pendingRequest)) {
+				temp_req_1.setId(req1.getId());
+				temp_req_1.setLoggedUserName(pendingRequest.getLoggedUserName());
+				temp_req_1.setRequestedUserName(pendingRequest.getRequestedUserName());
+				temp_req_1.setStatus(pendingRequest.getStatus());
+			}
+		}
+		System.out.println(temp_req_1+" "+temp_req_2);
+//		PendingRequest temp_req_1 = h_request_1.get().getRequested().stream().filter(s -> {return s.equals(pendingRequest);}).findAny().orElse(null);
+//		PendingRequest temp_req_2 = h_request_2.get().getPending().stream().filter(s -> {return s.equals(pendingRequest);}).findAny().orElse(null);
+		if(temp_req_1==null||temp_req_2==null)
+		{
+			UserResponse response=new UserResponse(HttpStatus.OK.value(),"Failed to update handle request data...");
+			return response;
+		}
+//		int index_1=h_request_1.get().getRequested().indexOf(temp_req_1);
+//		int index_2=h_request_2.get().getPending().indexOf(temp_req_2);
+//		System.out.println(index_1+" "+index_2);
+		
+		h_request_1.get().getRequested().remove(temp_req_1);
+		h_request_2.get().getPending().remove(temp_req_2);
+		temp_req_1.setStatus("accepted");
+		temp_req_2.setStatus("accepted");
+		
+		h_request_1.get().getRequested().add(temp_req_1);
+		h_request_2.get().getPending().add(temp_req_2);
+		
+		h_request_1.get().getFollowing().add(pendingRequest.getRequestedUserName());
+		h_request_1.get().setFollowing(h_request_1.get().getFollowing());
+		handleRequestRepository.save(h_request_1.get());
+		
+		h_request_2.get().getFollowers().add(pendingRequest.getLoggedUserName());
+		h_request_2.get().setFollowers(h_request_2.get().getFollowers());
+		handleRequestRepository.save(h_request_2.get());
+		
+		UserResponse response=new UserResponse(HttpStatus.OK.value(),"Request Accepted Successfully...");
+		return response;
+	}
+
+}

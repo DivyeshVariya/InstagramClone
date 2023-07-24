@@ -1,0 +1,127 @@
+package com.postsmanager.controller;
+
+import java.io.IOException;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.postsmanager.dto.AllPostResponse;
+import com.postsmanager.dto.PostCountResponse;
+import com.postsmanager.dto.PostDataRequest;
+import com.postsmanager.dto.PostDataResponse;
+import com.postsmanager.dto.PostLikeRequest;
+import com.postsmanager.dto.PostLikeResponse;
+import com.postsmanager.dto.Request;
+import com.postsmanager.dto.Response;
+import com.postsmanager.dto.SavedPostRequest;
+import com.postsmanager.model.Post;
+import com.postsmanager.service.PostService;
+import com.postsmanager.service.SavedPostService;
+
+
+@RestController
+@CrossOrigin(origins = "*", allowedHeaders = "*")
+@RequestMapping("/posts")
+public class PostsController {
+	
+	@Autowired
+	PostService postService;
+	
+	@Autowired
+	SavedPostService savedPostService;
+	
+	@PostMapping("/addPost")
+	public Response addPost(@ModelAttribute PostDataRequest postDataRequest) throws IOException
+	{
+		return postService.addPost(postDataRequest);
+	}
+	
+	@DeleteMapping("/deletePost")
+	public Response deletePost(@RequestParam String userName,@RequestParam int id)
+	{
+		Request request=new Request(userName,id);
+		System.out.println(request);
+		
+		return postService.deletePost(request);
+	}
+	
+	@GetMapping("/getAllPost")
+	public AllPostResponse getAllPost(@RequestParam("userName") String userName)
+	{
+		return postService.getAllPost(userName);
+	}
+	
+	@GetMapping("/getAllPostForAll")
+	public AllPostResponse getAllPostForAll()
+	{
+		return postService.getAllPostForAll();
+	}
+	
+	@GetMapping("/getPost")
+	public PostDataResponse getPost(@RequestParam String userName,@RequestParam int id)
+	{
+		Request request=new Request(userName,id);
+		System.out.println(request);
+		
+		return postService.getPost(request);
+	}
+	
+	@PutMapping("/likePost")
+	public PostLikeResponse likePost(@RequestBody PostLikeRequest request)
+	{
+		return postService.likePost(request);
+	}
+	
+	@PutMapping("/dislikePost")
+	public PostLikeResponse dislikePost(@RequestBody PostLikeRequest request)
+	{
+		return postService.dislikePost(request);
+	}
+	
+	@GetMapping("/getListOfLikesForPost")
+	public PostLikeResponse getListOfLikesForPost(@RequestParam String postUser,@RequestParam int id)
+	{
+		return postService.getListOfLikesForPost(postUser,id);
+	}
+
+	@GetMapping("/getPostCount")
+	public PostCountResponse getPostCount(@RequestParam("userName") String userName)
+	{
+		return postService.getPostCount(userName);
+	}
+	
+	@PostMapping("/savePost")
+	public Response savePost(@RequestBody SavedPostRequest savedPostRequest)
+	{
+		return savedPostService.savePost(savedPostRequest);
+	}
+	
+	@GetMapping("/getSavedPost")
+	public AllPostResponse getSavedPost(@RequestParam String userName)
+	{
+		return savedPostService.getSavedPost(userName);
+	}
+	
+	@DeleteMapping("/removeSavedPost")
+	public Response removeSavedPost(@RequestBody SavedPostRequest savedPostRequest)
+	{
+		return savedPostService.removeSavedPost(savedPostRequest.getUserName(),savedPostRequest.getPosts());
+	}
+	
+	@DeleteMapping("/removeAllSavedPost")
+	public Response removeAllSavedPost(@RequestParam String userName)
+	{
+		return savedPostService.removeAllSavedPost(userName);
+	}
+}

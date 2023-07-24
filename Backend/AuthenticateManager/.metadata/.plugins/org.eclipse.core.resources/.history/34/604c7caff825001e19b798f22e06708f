@@ -1,0 +1,5 @@
+package com.authenticate.service;
+
+public interface RequestHandlingService {
+
+}

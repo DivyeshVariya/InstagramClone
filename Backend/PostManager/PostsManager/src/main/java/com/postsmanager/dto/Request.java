@@ -1,0 +1,35 @@
+package com.postsmanager.dto;
+
+public class Request {
+
+	private String userName;
+	private int id;
+	
+	public Request() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	public Request(String userName, int id) {
+		super();
+		this.userName = userName;
+		this.id = id;
+	}
+	public String getUserName() {
+		return userName;
+	}
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+	@Override
+	public String toString() {
+		return "Request [userName=" + userName + ", id=" + id + "]";
+	}
+	
+	
+}

@@ -1,0 +1,37 @@
+package com.authenticate.model;
+
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document("PendingRequests")
+public class PendingRequest {
+
+	private String loggedUserName;
+	private String requestedUserName;
+	public PendingRequest() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	public PendingRequest(String loggedUserName, String requestedUserName) {
+		super();
+		this.loggedUserName = loggedUserName;
+		this.requestedUserName = requestedUserName;
+	}
+	public String getLoggedUserName() {
+		return loggedUserName;
+	}
+	public void setLoggedUserName(String loggedUserName) {
+		this.loggedUserName = loggedUserName;
+	}
+	public String getRequestedUserName() {
+		return requestedUserName;
+	}
+	public void setRequestedUserName(String requestedUserName) {
+		this.requestedUserName = requestedUserName;
+	}
+	@Override
+	public String toString() {
+		return "PendingRequest [loggedUserName=" + loggedUserName + ", requestedUserName=" + requestedUserName + "]";
+	}
+	
+	
+}

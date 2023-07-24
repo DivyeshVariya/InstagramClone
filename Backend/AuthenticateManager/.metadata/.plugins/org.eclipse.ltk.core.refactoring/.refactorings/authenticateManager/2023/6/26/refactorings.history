@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename type &apos;com.authenticate.dto.UserRequest&apos; to &apos;UserRegisterRequest&apos;&#x0D;&#x0A;- Original project: &apos;authenticateManager&apos;&#x0D;&#x0A;- Original element: &apos;com.authenticate.dto.UserRequest&apos;&#x0D;&#x0A;- Renamed element: &apos;com.authenticate.dto.UserRegisterRequest&apos;&#x0D;&#x0A;- Update references to refactored element&#x0D;&#x0A;- Update textual occurrences in comments and strings" description="Rename type &apos;UserRequest&apos;" flags="589830" id="org.eclipse.jdt.ui.rename.type" input="/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;com.authenticate.dto{UserRequest.java[UserRequest" matchStrategy="1" name="UserRegisterRequest" qualified="false" references="true" similarDeclarations="false" stamp="1687973848432" textual="false" version="1.0"/>
+</session>

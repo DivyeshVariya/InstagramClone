@@ -1,0 +1,31 @@
+package com.postsmanager.serviceImpl;
+
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
+import com.postsmanager.dto.Response;
+import com.postsmanager.dto.SavedPostRequest;
+import com.postsmanager.model.SavedPost;
+import com.postsmanager.repository.SavedPostRepository;
+import com.postsmanager.service.SavedPostService;
+@Service
+public class SavedPostServiceImpl implements SavedPostService{
+
+	@Autowired
+	SavedPostRepository savedPostRepository;
+	
+	@Override
+	public Response savePost(SavedPostRequest savedPostRequest) {
+		// TODO Auto-generated method stub
+		Optional<SavedPost> spSavedPost=savedPostRepository.findById(savedPostRequest.getUserName());
+		if(spSavedPost.isEmpty())
+		{
+			savedPostRepository.save(new SavedPost(savedPostRequest.getUserName(),savedPostRequest.getPosts()));
+			Response response=new Response(HttpStatus.INTERNAL_SERVER_ERROR.value(),"Failed to save post...");
+		}
+	}
+
+}

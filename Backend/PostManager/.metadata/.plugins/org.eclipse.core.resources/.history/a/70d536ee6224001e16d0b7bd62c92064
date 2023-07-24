@@ -1,0 +1,5 @@
+package com.postsmanager.service;
+
+public interface SavedPostService {
+
+}

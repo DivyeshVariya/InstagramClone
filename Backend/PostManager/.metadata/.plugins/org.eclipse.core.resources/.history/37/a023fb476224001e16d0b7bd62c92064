@@ -1,0 +1,39 @@
+package com.postsmanager.model;
+
+import java.util.List;
+
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document("SavedPost")
+public class SavedPost {
+
+	private String userName;
+	private List<Post> posts;
+	public SavedPost() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	public SavedPost(String userName, List<Post> posts) {
+		super();
+		this.userName = userName;
+		this.posts = posts;
+	}
+	public String getUserName() {
+		return userName;
+	}
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+	public List<Post> getPosts() {
+		return posts;
+	}
+	public void setPosts(List<Post> posts) {
+		this.posts = posts;
+	}
+	@Override
+	public String toString() {
+		return "SavedPost [userName=" + userName + ", posts=" + posts + "]";
+	}
+	
+	
+}

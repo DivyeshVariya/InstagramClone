@@ -1,0 +1,126 @@
+package com.authenticate.controller;
+
+import java.io.IOException;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.authenticate.dto.PendingReqResponse;
+import com.authenticate.dto.UserDataResponse;
+import com.authenticate.dto.UserDetailsResponse;
+import com.authenticate.dto.UserLoginRequest;
+import com.authenticate.dto.UserPicRequest;
+import com.authenticate.dto.UserPicResponse;
+import com.authenticate.dto.UserRegisterRequest;
+import com.authenticate.dto.UserResponse;
+import com.authenticate.model.PendingRequest;
+import com.authenticate.model.ProfilePic;
+import com.authenticate.model.User;
+import com.authenticate.service.RequestHandlingService;
+import com.authenticate.service.UserService;
+
+@RestController
+@CrossOrigin(origins = "*", allowedHeaders = "*")
+@RequestMapping("/auth")
+public class AuthController {
+	
+	@Autowired
+	UserService userService;
+	
+	@Autowired
+	RequestHandlingService requestHandlingService;
+	
+	@PostMapping("/register")
+	public UserResponse registerUser(@RequestBody UserRegisterRequest userRequest)
+	{
+		return userService.register(userRequest);
+	}
+	
+	@GetMapping("/login")
+	public UserResponse loginUser(@RequestParam("userName") String userName,@RequestParam("password") String password)
+	{
+		UserLoginRequest userRequest=new UserLoginRequest(userName,password); 
+		return userService.login(userRequest);
+	}
+	
+	@GetMapping("/checkUserName")
+	public UserResponse checkUserName(@RequestParam String userName)
+	{
+		return userService.checkUserName(userName);
+	}
+	
+	@GetMapping("/findByUserName")
+	public UserDataResponse findByUserName(@RequestParam String userName)
+	{
+		return userService.findByUserName(userName);
+	}
+	
+	@GetMapping("/checkEmail")
+	public UserResponse checkEmail(@RequestParam String email)
+	{
+		return userService.checkEmail(email);
+	}
+	
+	@GetMapping("/findByEmail")
+	public UserDataResponse findByEmail(@RequestParam String email)
+	{
+		return userService.findByEmail(email);
+	}
+	
+	@PostMapping("/editProfile")
+	public UserResponse editprofile(@RequestBody User user)
+	{
+		return userService.editProfile(user);
+	}
+	
+	@PostMapping("/setProfilePic")
+	public UserResponse setProfilePic(@ModelAttribute UserPicRequest pic) throws IOException
+	{
+		System.out.println(pic);
+		return userService.setProfilePic(pic);
+	}
+	
+	@GetMapping("/getProfilePic")
+	public UserPicResponse getProfilePic(@RequestParam String userName)
+	{
+		return userService.getProfilePic(userName);
+	}
+	
+	@GetMapping("/getBio")
+	public UserResponse getBio(@RequestParam String userName)
+	{
+		return userService.getBio(userName);
+	}
+	
+	@DeleteMapping("/deleteProfilePic")
+	public UserResponse deleteProfilePic(@RequestParam String userName)
+	{
+		return userService.deleteProfilePic(userName);
+	}
+	
+	@PostMapping("/sendRequest")
+	public UserResponse sendRequest(@RequestBody PendingRequest pendingRequest)
+	{
+		return requestHandlingService.sendRequest(pendingRequest);
+	}
+	
+	@GetMapping("/getPendingRequests")
+	public PendingReqResponse getPendingRequests(@RequestParam String loggedInUserName)
+	{
+		return requestHandlingService.getPendingRequests(loggedInUserName);
+	}
+	
+	@GetMapping("/getRequestDetails")
+	public UserDetailsResponse getRequestDetails(@RequestParam String loggedInUserName)
+	{
+		return requestHandlingService.getRequestDetails(loggedInUserName);
+	}
+}

@@ -1,0 +1,5 @@
+package com.postsmanager.model;
+
+public class SavedPost {
+
+}

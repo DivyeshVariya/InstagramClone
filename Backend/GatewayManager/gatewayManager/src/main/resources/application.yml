@@ -1,0 +1,37 @@
+
+server:
+  port: 8080
+spring:
+  application:
+    name: gateway
+  cloud:
+    gateway:
+      default-filters:
+      - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+      globalcors:
+        cors-configurations:
+          '[/**]':
+              allowedOrigins: "*"
+              allowedMethods: "*"
+              allowedHeaders: "*" 
+      routes:
+      - id: authenticate-manager
+        uri: lb://authenticate-manager
+        predicates:
+          - Path=/auth/**   
+      - id: posts-manager
+        uri: lb://posts-manager
+        predicates:
+         - Path=/posts/**
+      - id: comment-manager
+        uri: lb://comment-manager
+        predicates:
+         - Path=/comment/**   
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka

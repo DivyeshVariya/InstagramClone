@@ -1,0 +1,86 @@
+package com.authenticate.serviceImpl;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
+import com.authenticate.dto.PendingReqResponse;
+import com.authenticate.dto.UserDetailsResponse;
+import com.authenticate.dto.UserResponse;
+import com.authenticate.model.HandleRequest;
+import com.authenticate.model.PendingRequest;
+import com.authenticate.repository.HandleRequestRepository;
+import com.authenticate.repository.PendingRequestRepository;
+import com.authenticate.service.RequestHandlingService;
+
+@Service
+public class RequestHandlingServiceImpl implements RequestHandlingService{
+
+	@Autowired
+	PendingRequestRepository pendingRequestRepository;
+	
+	@Autowired
+	HandleRequestRepository handleRequestRepository;
+	
+	@Override
+	public UserResponse sendRequest(PendingRequest pendingRequest) {
+		// TODO Auto-generated method stub
+		PendingRequest pr=pendingRequestRepository.save(pendingRequest);
+		if(pr.equals(null))
+		{
+			UserResponse response=new UserResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),"Failed to add pending request data...");
+			return response;
+		}
+		Optional<HandleRequest> hr=handleRequestRepository.findById(pendingRequest.getLoggedUserName());
+		if(hr.equals(null))
+		{
+			UserResponse response=new UserResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),"Failed to add in handle reuqest data...");
+			return response;
+		}
+		hr.get().getRequest().add(pendingRequest);
+		hr.get().setRequest(hr.get().getRequest());
+		handleRequestRepository.save(hr.get());
+		UserResponse response=new UserResponse(HttpStatus.OK.value(),"Request sent successfully...");
+		return response;
+	}
+
+	@Override
+	public PendingReqResponse getPendingRequests(String loggedInUserName, String requestedUserName) {
+		// TODO Auto-generated method stub
+		Optional<PendingRequest> req =pendingRequestRepository.findByLoggedUserNameAndRequestedUserName(loggedInUserName,requestedUserName);
+		if(req.isEmpty())
+		{
+			PendingReqResponse response=new PendingReqResponse(HttpStatus.OK.value(),"No pending requests there...",null);
+			return response;
+		}
+		PendingReqResponse response=new PendingReqResponse(HttpStatus.OK.value(),"Pending requests find successfully...",req.get());
+		return response;
+	}
+
+	@Override
+	public UserDetailsResponse getRequestDetails(String loggedInUserName) {
+		// TODO Auto-generated method stub
+		Optional<HandleRequest> request =handleRequestRepository.findById(loggedInUserName);
+		if(request.isEmpty())
+		{
+			UserDetailsResponse response=new UserDetailsResponse(HttpStatus.NOT_FOUND.value(),"User Details not found...",null);
+			return response;
+		}
+		UserDetailsResponse response=new UserDetailsResponse(HttpStatus.OK.value(),"User Details found successfully...",request.get());
+		return response;
+	}
+
+	@Override
+	public UserResponse add(HandleRequest request) {
+		// TODO Auto-generated method stub
+		handleRequestRepository.save(request);
+		return null;
+	}
+
+
+
+}

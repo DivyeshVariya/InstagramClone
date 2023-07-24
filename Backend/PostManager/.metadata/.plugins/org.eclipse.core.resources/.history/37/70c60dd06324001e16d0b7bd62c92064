@@ -1,0 +1,7 @@
+package com.postsmanager.serviceImpl;
+
+import com.postsmanager.service.SavedPostService;
+
+public class SavedPostServiceImpl implements SavedPostService{
+
+}

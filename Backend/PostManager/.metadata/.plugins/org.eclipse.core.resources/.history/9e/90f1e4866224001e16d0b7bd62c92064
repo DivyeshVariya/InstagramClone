@@ -1,0 +1,5 @@
+package com.postsmanager.serviceImpl;
+
+public class SavedPostServiceImpl {
+
+}

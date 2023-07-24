@@ -1,0 +1,12 @@
+package com.postsmanager.service;
+
+import com.postsmanager.dto.Response;
+import com.postsmanager.dto.SavedPostRequest;
+
+public interface SavedPostService {
+
+	Response savePost(SavedPostRequest savedPostRequest);
+
+	Response getSavedPost(String userName);
+
+}

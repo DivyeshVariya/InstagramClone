@@ -1,0 +1,10 @@
+package com.authenticate.serviceImpl;
+
+import org.springframework.stereotype.Service;
+
+import com.authenticate.service.RequestHandlingService;
+
+@Service
+public class RequestHandlingServiceImpl implements RequestHandlingServiceH{
+
+}
